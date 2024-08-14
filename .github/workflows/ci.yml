@@ -13,18 +13,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner:
-          - [runs-on, runner=32cpu-linux-x64, "run-id=${{ github.run_id }}"]
-          - [runs-on, runner=32cpu-linux-arm64, "run-id=${{ github.run_id }}"]
-          - self-hosted
-          - macos-13
+        include:
+          - runner: [runs-on, runner=32cpu-linux-x64, "run-id=${{ github.run_id }}"]
+            os: ubuntu
+          - runner: [runs-on, runner=32cpu-linux-arm64, "run-id=${{ github.run_id }}"]
+            os: ubuntu
+          - runner: self-hosted
+            os: macos
+          - runner: macos-13
+            os: macos
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Install nightly toolchain
         id: rustc-toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2024-01-25
+          toolchain: nightly-2024-05-29
           default: true
 
       - uses: lukka/get-cmake@v3.27.4
@@ -35,7 +39,7 @@ jobs:
           rustup toolchain list
 
       - name: Check out athenavm/rustc-rv32e-toolchain
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           path: toolchain
@@ -46,6 +50,19 @@ jobs:
           repository: athenavm/athena
           ref: main
           path: athena
+
+      - name: Install ninja and riscv-tools
+        if: matrix.os == 'ubuntu'
+        run: |
+          sudo apt update
+          sudo apt-get -y install ninja-build gcc-riscv64-unknown-elf
+
+      - name: Install ninja and riscv-tools
+        if: matrix.os == 'macos'
+        run: |
+          brew install ninja
+          brew tap riscv-software-src/riscv
+          brew install riscv-tools
 
       - name: Build
         run:
