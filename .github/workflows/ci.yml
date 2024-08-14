@@ -56,6 +56,11 @@ jobs:
           sudo apt update
           sudo apt-get -y install gcc-riscv64-unknown-elf
 
+      # default runner homebrew setup won't allow us to run `brew tap`
+      - name: Set up Homebrew
+        if: matrix.os == 'macos'
+        uses: Homebrew/actions/setup-homebrew@master
+
       - name: Install riscv-tools
         if: matrix.os == 'macos'
         run: |
