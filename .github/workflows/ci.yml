@@ -54,9 +54,9 @@ jobs:
           ref: main
           path: athena
 
-      - name: Source config.sh and export RUST_COMMIT
+      - name: Get Rust commit
         run: |
-          source toolchain/config.sh
+          RUST_COMMIT=$(cat toolchain/rust_commit.txt)
           echo "Using Rust commit: $RUST_COMMIT"
           echo "RUST_COMMIT=$RUST_COMMIT" >> $GITHUB_ENV
 
