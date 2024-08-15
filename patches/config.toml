@@ -6,9 +6,9 @@ extended = true
 tools = ["cargo", "cargo-clippy", "clippy", "rustfmt"]
 configure-args = []
 
-[target.riscv32em-athena-zkvm-elf]
-cc = "clang"
-cxx = "clang++"
+# [target.riscv32em-athena-zkvm-elf]
+# cc = "clang"
+# cxx = "clang++"
 
 [rust]
 lld = true

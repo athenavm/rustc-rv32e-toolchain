@@ -48,12 +48,16 @@ jobs:
         include:
           - runner: [runs-on, runner=32cpu-linux-x64, "run-id=${{ github.run_id }}"]
             os: ubuntu
+            cachekey: ubuntu-x86
           - runner: [runs-on, runner=32cpu-linux-arm64, "run-id=${{ github.run_id }}"]
             os: ubuntu
+            cachekey: ubuntu-arm64
           - runner: self-hosted
             os: macos
+            cachekey: macos-arm64
           - runner: macos-13
             os: macos
+            cachekey: macos-x86
 
     steps:
       - name: Free Disk Space (Ubuntu)
@@ -69,6 +73,17 @@ jobs:
           swap-storage: true
 
       - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        name: Cache Rust toolchain
+        with:
+          path: |
+            rust/build
+            rust/library
+            rust/src/doc
+            rust/src/llvm-project
+            rust/src/tools
+          key: ${{ matrix.cachekey }}-buildtoolchain-${{ env.RUST_COMMIT }}
 
       - name: Install ninja
         uses: lukka/get-cmake@v3.30.2
