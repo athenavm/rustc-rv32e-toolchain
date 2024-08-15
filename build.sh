@@ -15,7 +15,6 @@ touch /tmp/riscv32em-athena-zkvm-elf.json
 # Set environment variables to override compiler flags
 export CC_riscv32em_athena_zkvm_elf="clang"
 export CXX_riscv32em_athena_zkvm_elf="clang++"
-#export AR_riscv32em_athena_zkvm_elf="ar"
 
 # Explicitly set CFLAGS without the problematic flags
 export CFLAGS_riscv32em_athena_zkvm_elf="-ffunction-sections -fdata-sections -fPIC -target riscv32-unknown-elf"

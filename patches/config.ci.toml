@@ -8,8 +8,8 @@ configure-args = []
 cargo-native-static = true
 
 [target.riscv32em-athena-zkvm-elf]
-cc = "riscv64-unknown-elf-gcc"
-cxx = "riscv64-unknown-elf-g++"
+cc = "clang"
+cxx = "clang++"
 
 [rust]
 lld = true
