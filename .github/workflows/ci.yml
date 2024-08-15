@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: athenavm/athena
-          ref: main
+          ref: rust-commit-hash
           path: athena
 
       - name: Get Rust commit
