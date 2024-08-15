@@ -65,13 +65,17 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             athena/target/
-          key: ${{ matrix.os }}-athenabuild-${{ hashFiles('athena/**/Cargo.lock') }}
+          key: ${{ matrix.os }}-athenabuild-${{ hashFiles('athena/**/Cargo.toml') }}
 
       - uses: actions/cache@v4
         name: Cache Rust toolchain
         with:
           path: |
-            toolchain/rust/
+            toolchain/rust/build
+            toolchain/rust/library
+            toolchain/rust/src/doc
+            toolchain/rust/src/llvm-project
+            toolchain/rust/src/tools
           key: ${{ matrix.os }}-rusttoolchain-${{ env.RUST_COMMIT }}
 
       - name: Build
