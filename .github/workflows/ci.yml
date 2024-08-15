@@ -15,12 +15,16 @@ jobs:
         include:
           - runner: [runs-on, runner=32cpu-linux-x64, "run-id=${{ github.run_id }}"]
             os: ubuntu
+            cachekey: ubuntu-x86
           - runner: [runs-on, runner=32cpu-linux-arm64, "run-id=${{ github.run_id }}"]
             os: ubuntu
+            cachekey: ubuntu-arm64
           - runner: self-hosted
             os: macos
+            cachekey: macos-arm64
           - runner: macos-13
             os: macos
+            cachekey: macos-x86
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 120
     steps:
@@ -65,7 +69,7 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             athena/target/
-          key: ${{ matrix.os }}-athenabuild-${{ hashFiles('athena/**/Cargo.toml') }}
+          key: ${{ matrix.cachekey }}-athenabuild-${{ hashFiles('athena/**/Cargo.toml') }}
 
       - uses: actions/cache@v4
         name: Cache Rust toolchain
@@ -76,7 +80,7 @@ jobs:
             toolchain/rust/src/doc
             toolchain/rust/src/llvm-project
             toolchain/rust/src/tools
-          key: ${{ matrix.os }}-rusttoolchain-${{ env.RUST_COMMIT }}
+          key: ${{ matrix.cachekey }}-rusttoolchain-${{ env.RUST_COMMIT }}
 
       - name: Build
         run:
