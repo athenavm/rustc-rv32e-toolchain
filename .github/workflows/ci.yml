@@ -59,18 +59,6 @@ jobs:
           echo "Using Rust commit: $RUST_COMMIT"
           echo "RUST_COMMIT=$RUST_COMMIT" >> $GITHUB_ENV
 
-      # This is a shortcut to allow caching. If we don't manually check out Rust here,
-      # the Athena CLI tool will refuse to check it out since the cache will have
-      # already restored files into the same directory.
-      # This command won't check out submodules recursively. The cache restore will do
-      # this for us, saving time.
-      - name: Check out Rust toolchain
-        uses: actions/checkout@v4
-        with:
-          repository: rust-lang/rust
-          ref: ${{ env.RUST_COMMIT }}
-          path: toolchain/rust
-
       - uses: actions/cache@v4
         name: Cache Athena build
         with:
@@ -86,11 +74,11 @@ jobs:
         name: Cache Rust toolchain
         with:
           path: |
-            toolchain/rust/build
-            toolchain/rust/library
-            toolchain/rust/src/doc
-            toolchain/rust/src/llvm-project
-            toolchain/rust/src/tools
+            toolchain/rust/**
+            # toolchain/rust/library
+            # toolchain/rust/src/doc
+            # toolchain/rust/src/llvm-project
+            # toolchain/rust/src/tools
           key: ${{ matrix.cachekey }}-rusttoolchain-${{ env.RUST_COMMIT }}
 
       - name: Build
