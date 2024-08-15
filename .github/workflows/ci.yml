@@ -50,6 +50,30 @@ jobs:
           ref: main
           path: athena
 
+      - name: Source config.sh and export RUST_COMMIT
+        run: |
+          source toolchain/config.sh
+          echo "Using Rust commit: $RUST_COMMIT"
+          echo "RUST_COMMIT=$RUST_COMMIT" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: Cache Athena build
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            athena/target/
+          key: ${{ matrix.os }}-athenabuild-${{ hashFiles('athena/**/Cargo.lock') }}
+
+      - uses: actions/cache@v4
+        name: Cache Rust toolchain
+        with:
+          path: |
+            toolchain/rust/
+          key: ${{ matrix.os }}-rusttoolchain-${{ env.RUST_COMMIT }}
+
       - name: Build
         run:
           GITHUB_ACTIONS=false ATHENA_BUILD_DIR=$GITHUB_WORKSPACE/toolchain cargo run --bin cargo-athena -- athena
