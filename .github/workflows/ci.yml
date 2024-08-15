@@ -22,6 +22,7 @@ jobs:
           - runner: macos-13
             os: macos
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
     steps:
       - name: Install nightly toolchain
         id: rustc-toolchain
@@ -43,23 +44,11 @@ jobs:
           path: toolchain
 
       - name: Check out athenavm/athena
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: athenavm/athena
           ref: main
           path: athena
-
-      - name: Install riscv-tools
-        if: matrix.os == 'ubuntu'
-        run: |
-          sudo apt update
-          sudo apt-get -y install gcc-riscv64-unknown-elf
-
-      - name: Install riscv-tools
-        if: matrix.os == 'macos'
-        run: |
-          brew tap riscv-software-src/riscv
-          brew install riscv-tools
 
       - name: Build
         run:
