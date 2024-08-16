@@ -5,8 +5,8 @@ set -euo pipefail
 source config.sh
 
 # Fail fast if these tools aren't properly installed and in the path
-need_cmd clang
-need_cmd clang++
+need_cmd riscv32-unknown-elf-clang
+need_cmd riscv32-unknown-elf-clang++
 
 # Rust requires a custom target file to exist for our custom target as part of the bootstrap build,
 # but it doesn't actually look at the contents.
