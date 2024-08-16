@@ -2,27 +2,39 @@ name: CI
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - "**"
+    paths-ignore:
+      - README.md
 
 jobs:
   build:
     strategy:
-      fail-fast: false
       matrix:
-        runner:
-          - [runs-on, runner=32cpu-linux-x64, "run-id=${{ github.run_id }}"]
-          - [runs-on, runner=32cpu-linux-arm64, "run-id=${{ github.run_id }}"]
-          - self-hosted
-          - macos-13
+        include:
+          - runner: [runs-on, runner=32cpu-linux-x64, "run-id=${{ github.run_id }}"]
+            os: ubuntu
+            cachekey: ubuntu-x86
+          - runner: [runs-on, runner=32cpu-linux-arm64, "run-id=${{ github.run_id }}"]
+            os: ubuntu
+            cachekey: ubuntu-arm64
+          - runner: self-hosted
+            os: macos
+            cachekey: macos-arm64
+          - runner: macos-13
+            os: macos
+            cachekey: macos-x86
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
     steps:
       - name: Install nightly toolchain
         id: rustc-toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: nightly-2024-01-25
-          default: true
+          toolchain: nightly-2024-05-29
 
-      - uses: lukka/get-cmake@v3.27.4
+      - uses: lukka/get-cmake@v3.30.2
 
       - name: Show rust version
         run: |
@@ -30,17 +42,45 @@ jobs:
           rustup toolchain list
 
       - name: Check out athenavm/rustc-rv32e-toolchain
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           path: toolchain
 
       - name: Check out athenavm/athena
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: athenavm/athena
-          ref: main
+          ref: fix-toolchain-build
           path: athena
+
+      - name: Get Rust commit
+        run: |
+          RUST_COMMIT=$(cat toolchain/rust_commit.txt)
+          echo "Using Rust commit: $RUST_COMMIT"
+          echo "RUST_COMMIT=$RUST_COMMIT" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: Cache Athena build
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            athena/target/
+          key: ${{ matrix.cachekey }}-athenabuild-${{ hashFiles('athena/**/Cargo.toml') }}
+
+      - uses: actions/cache@v4
+        name: Cache Rust toolchain
+        with:
+          path: |
+            toolchain/rust/**
+            # toolchain/rust/library
+            # toolchain/rust/src/doc
+            # toolchain/rust/src/llvm-project
+            # toolchain/rust/src/tools
+          key: ${{ matrix.cachekey }}-rusttoolchain-${{ env.RUST_COMMIT }}
 
       - name: Build
         run:
