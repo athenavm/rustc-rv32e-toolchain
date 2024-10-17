@@ -50,7 +50,7 @@ jobs:
             os: ubuntu
           - runner: [runs-on, runner=32cpu-linux-arm64, "run-id=${{ github.run_id }}"]
             os: ubuntu
-          - runner: self-hosted
+          - runner: macos-latest
             os: macos
 
     steps:
