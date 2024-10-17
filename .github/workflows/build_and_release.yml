@@ -52,8 +52,6 @@ jobs:
             os: ubuntu
           - runner: self-hosted
             os: macos
-          - runner: macos-13
-            os: macos
 
     steps:
       - name: Free Disk Space (Ubuntu)
