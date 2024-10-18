@@ -11,8 +11,7 @@ jobs:
         runner:
           - [runs-on, runner=32cpu-linux-x64, "run-id=${{ github.run_id }}"]
           - [runs-on, runner=32cpu-linux-arm64, "run-id=${{ github.run_id }}"]
-          - self-hosted
-          - macos-13
+          - macos-latest
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Install nightly toolchain
